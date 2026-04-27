@@ -1,0 +1,43 @@
+@import url('https://fonts.googleapis.com/css2?family=Material+Symbols+Rounded:FILL@0..1&display=swap');
+@import url('https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600&family=Playfair+Display:wght@500;600&display=swap');
+@import "tailwindcss";
+
+@theme {
+  --color-primary: #1f4d3e;
+  --color-accent: #2f7d6d;
+  --color-soft: #f5f3ef;
+  --color-card: #ffffff;
+  --color-muted: #6b7280;
+  --color-heading: #1a1a1a;
+  --color-gold: #c8a97e;
+  --font-heading: "Playfair Display", serif;
+  --font-body: "Inter", sans-serif;
+  --shadow-soft: 0 10px 30px rgba(0, 0, 0, 0.08);
+}
+
+@layer base {
+  body {
+    @apply bg-soft text-heading font-body;
+    letter-spacing: 0.3px;
+    line-height: 1.6;
+    font-size: 15px;
+  }
+
+  h1,
+  h2,
+  h3,
+  h4 {
+    @apply font-heading;
+    letter-spacing: 0.4px;
+  }
+
+  #root {
+    min-height: 100vh;
+    padding: 0;
+  }
+
+  button:focus-visible,
+  input:focus-visible {
+    @apply outline-none ring-2 ring-primary/40 ring-offset-2 ring-offset-soft;
+  }
+}
