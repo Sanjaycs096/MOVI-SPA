@@ -422,7 +422,12 @@ function AppShell({ view, onNav, clients, setClients }) {
               className="logout-button"
               aria-label="Log out"
               onClick={() => {
-                window.location.reload()
+                try {
+                  localStorage.removeItem('access_token')
+                } catch (error) {
+                  // Ignore storage errors and continue logout flow.
+                }
+                onNav('login')
               }}
             >
               <MaterialSymbol name="logout" className="text-[16px]" />
