@@ -7583,6 +7583,273 @@
   transition: width 0.3s ease;
 }
 
+/* Settings View */
+.settings-view {
+  display: flex;
+  flex-direction: column;
+  gap: 18px;
+}
+
+.settings-header {
+  display: flex;
+  align-items: center;
+  justify-content: flex-end;
+}
+
+.settings-search {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  padding: 8px 12px;
+  border-radius: 999px;
+  background: #ffffff;
+  border: 1px solid #eee5d9;
+  color: #6c655b;
+}
+
+.settings-search input {
+  border: none;
+  outline: none;
+  background: transparent;
+  font-size: 12px;
+  width: 200px;
+  color: #3d3a36;
+}
+
+.settings-search input::placeholder {
+  color: #a39a8f;
+}
+
+.settings-status {
+  background: #e5f2eb;
+  color: #1f6b54;
+  font-size: 11px;
+  padding: 10px 14px;
+  border-radius: 12px;
+  border: 1px solid #cfe6da;
+}
+
+.settings-card {
+  background: #ffffff;
+  border-radius: 18px;
+  border: 1px solid #eee6db;
+  box-shadow: 0 12px 22px rgba(0, 0, 0, 0.06);
+  padding: 16px 18px;
+  display: flex;
+  flex-direction: column;
+  gap: 16px;
+}
+
+.settings-card-head {
+  display: flex;
+  align-items: flex-start;
+  justify-content: space-between;
+  gap: 16px;
+}
+
+.settings-card-head h3 {
+  margin: 0;
+  font-size: 14px;
+  color: #2f2a24;
+}
+
+.settings-card-head p {
+  margin: 6px 0 0;
+  font-size: 11px;
+  color: #8a8073;
+}
+
+.settings-card-actions {
+  display: flex;
+  gap: 8px;
+}
+
+.settings-form-grid {
+  display: grid;
+  grid-template-columns: repeat(2, minmax(0, 1fr));
+  gap: 16px;
+}
+
+.settings-form-grid.three-cols {
+  grid-template-columns: repeat(3, minmax(0, 1fr));
+}
+
+.settings-form-grid.four-cols {
+  grid-template-columns: repeat(4, minmax(0, 1fr));
+}
+
+.settings-form-group {
+  display: flex;
+  flex-direction: column;
+  gap: 8px;
+}
+
+.settings-form-group label {
+  display: block;
+  font-size: 10px;
+  letter-spacing: 1px;
+  text-transform: uppercase;
+  color: #9a9186;
+}
+
+.settings-form-group.full-width {
+  grid-column: 1 / -1;
+}
+
+.settings-input,
+.settings-textarea {
+  border: 1px solid #e6dfd5;
+  background: #f7f4ee;
+  padding: 10px 12px;
+  border-radius: 12px;
+  font-size: 12px;
+  color: #2f2a24;
+  outline: none;
+  width: 100%;
+  box-sizing: border-box;
+}
+
+.settings-textarea {
+  resize: vertical;
+  min-height: 90px;
+}
+
+.settings-input:disabled,
+.settings-textarea:disabled {
+  background: #f1ece3;
+  color: #7f766a;
+}
+
+.settings-hint {
+  margin: 6px 0 0;
+  font-size: 10px;
+  color: #9a9186;
+}
+
+.settings-days-grid {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 8px;
+}
+
+.settings-day-toggle {
+  display: inline-flex;
+  align-items: center;
+  gap: 6px;
+  background: #f1ece3;
+  border-radius: 999px;
+  padding: 6px 10px;
+  font-size: 10px;
+  letter-spacing: 1px;
+  text-transform: uppercase;
+  color: #7f766a;
+}
+
+.settings-toggle-box {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 10px;
+  background: #f7f4ee;
+  border: 1px solid #eee6db;
+  border-radius: 12px;
+  padding: 8px 10px;
+  font-size: 11px;
+  color: #7f766a;
+}
+
+.settings-toggle-card {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 12px;
+  border: 1px solid #eee6db;
+  background: #f7f4ee;
+  border-radius: 16px;
+  padding: 14px 16px;
+}
+
+.settings-toggle-title {
+  margin: 0;
+  font-size: 12px;
+  color: #2f2a24;
+}
+
+.settings-toggle-desc {
+  margin: 6px 0 0;
+  font-size: 10px;
+  color: #9a9186;
+}
+
+.settings-checkbox-card {
+  display: flex;
+  flex-direction: column;
+  gap: 10px;
+  border: 1px solid #eee6db;
+  background: #f7f4ee;
+  border-radius: 16px;
+  padding: 14px 16px;
+  font-size: 11px;
+  color: #6f665c;
+}
+
+.settings-checkbox-card label {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  font-size: 10px;
+  text-transform: uppercase;
+  letter-spacing: 1px;
+  color: #7f766a;
+}
+
+.settings-warning {
+  margin: 0;
+  font-size: 10px;
+  color: #b05b49;
+}
+
+.settings-message,
+.settings-error,
+.settings-success {
+  margin: 0;
+  font-size: 11px;
+}
+
+.settings-message,
+.settings-error {
+  color: #b05b49;
+}
+
+.settings-success {
+  color: #2f7d6d;
+}
+
+@media (max-width: 1100px) {
+  .settings-form-grid.three-cols,
+  .settings-form-grid.four-cols {
+    grid-template-columns: repeat(2, minmax(0, 1fr));
+  }
+}
+
+@media (max-width: 780px) {
+  .settings-card-head {
+    flex-direction: column;
+    align-items: flex-start;
+  }
+
+  .settings-card-actions {
+    width: 100%;
+    justify-content: flex-start;
+  }
+
+  .settings-form-grid,
+  .settings-form-grid.three-cols,
+  .settings-form-grid.four-cols {
+    grid-template-columns: 1fr;
+  }
+}
+
 /* Cancellation Analytics */
 .cancellation-analytics {
   grid-column: span 1;
