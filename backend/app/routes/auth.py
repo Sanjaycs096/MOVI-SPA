@@ -86,7 +86,7 @@ def create_captcha():
     answer = _build_captcha_text()
     image_data = _build_captcha_svg(answer)
     captcha_id = str(uuid4())
-    
+
     captcha_doc = {
         "_id": captcha_id,
         "answer_hash": hash_secret(answer),
@@ -118,22 +118,49 @@ def login(payload: LoginRequest):
         captcha = _memory_captchas.pop(payload.captcha_id, None)
 
     if not captcha:
-        raise HTTPException(status_code=400, detail="Invalid or expired captcha.")
+        raise HTTPException(
+            status_code=400,
+            detail="Invalid or expired captcha.",
+        )
 
     captcha_valid = verify_secret(
         payload.captcha_answer.strip(),
         captcha.get("answer_hash", ""),
     )
-    
+
     if not captcha_valid:
         raise HTTPException(status_code=400, detail="Invalid captcha answer.")
 
     email = _normalize_email(payload.email)
     user = None
-    
+
     if is_db_connected():
         db = get_db()
         user = db.users.find_one({"email": email})
+        if not user:
+            admin_email = settings.admin_email.strip().lower()
+            if email == admin_email:
+                is_admin = payload.password == settings.admin_password
+            else:
+                is_admin = False
+            if is_admin:
+                password_hash = hash_secret(settings.admin_password)
+                db.users.update_one(
+                    {"email": admin_email},
+                    {
+                        "$setOnInsert": {
+                            "email": admin_email,
+                            "password_hash": password_hash,
+                            "role": "admin",
+                            "created_at": datetime.utcnow(),
+                        }
+                    },
+                    upsert=True,
+                )
+                user = {
+                    "email": admin_email,
+                    "password_hash": password_hash,
+                }
     else:
         # Mock admin login if DB is down
         admin_email = settings.admin_email.strip().lower()
