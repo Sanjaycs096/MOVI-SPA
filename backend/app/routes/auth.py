@@ -1,9 +1,11 @@
 import base64
 import random
+from typing import cast
 from datetime import datetime
 from uuid import uuid4
 from fastapi import APIRouter, HTTPException
 from pydantic import BaseModel
+from pymongo.database import Database
 from ..config import settings
 from ..db import get_db, is_db_connected
 from ..security import create_access_token, hash_secret, verify_secret
@@ -94,7 +96,7 @@ def create_captcha():
     }
 
     if is_db_connected():
-        db = get_db()
+        db = cast(Database, get_db())
         db.captchas.insert_one(captcha_doc)
     else:
         _memory_captchas[captcha_id] = captcha_doc
@@ -110,7 +112,7 @@ def create_captcha():
 def login(payload: LoginRequest):
     captcha = None
     if is_db_connected():
-        db = get_db()
+        db = cast(Database, get_db())
         captcha = db.captchas.find_one({"_id": payload.captcha_id})
         if captcha:
             db.captchas.delete_one({"_id": payload.captcha_id})
@@ -135,32 +137,33 @@ def login(payload: LoginRequest):
     user = None
 
     if is_db_connected():
-        db = get_db()
+        db = cast(Database, get_db())
         user = db.users.find_one({"email": email})
-        if not user:
-            admin_email = settings.admin_email.strip().lower()
-            if email == admin_email:
-                is_admin = payload.password == settings.admin_password
-            else:
-                is_admin = False
-            if is_admin:
-                password_hash = hash_secret(settings.admin_password)
-                db.users.update_one(
-                    {"email": admin_email},
-                    {
-                        "$setOnInsert": {
-                            "email": admin_email,
-                            "password_hash": password_hash,
-                            "role": "admin",
-                            "created_at": datetime.utcnow(),
-                        }
+        admin_email = settings.admin_email.strip().lower()
+        admin_password = settings.admin_password
+        is_email_admin = email == admin_email
+        is_password_admin = payload.password == admin_password
+        is_admin_login = is_email_admin and is_password_admin
+        if is_admin_login:
+            password_hash = hash_secret(admin_password)
+            db.users.update_one(
+                {"email": admin_email},
+                {
+                    "$set": {
+                        "password_hash": password_hash,
+                        "role": "admin",
                     },
-                    upsert=True,
-                )
-                user = {
-                    "email": admin_email,
-                    "password_hash": password_hash,
-                }
+                    "$setOnInsert": {
+                        "email": admin_email,
+                        "created_at": datetime.utcnow(),
+                    },
+                },
+                upsert=True,
+            )
+            user = {
+                "email": admin_email,
+                "password_hash": password_hash,
+            }
     else:
         # Mock admin login if DB is down
         admin_email = settings.admin_email.strip().lower()
