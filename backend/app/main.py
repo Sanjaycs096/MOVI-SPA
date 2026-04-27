@@ -1,6 +1,9 @@
 from datetime import datetime
+from typing import cast
 from fastapi import FastAPI
 from fastapi.middleware.cors import CORSMiddleware
+from pymongo.database import Database
+from pymongo.errors import OperationFailure
 from .config import settings
 from .db import get_db, is_db_connected
 from .routes.auth import router as auth_router
@@ -13,6 +16,7 @@ app = FastAPI(title="MoviCloud SPA API")
 app.add_middleware(
     CORSMiddleware,
     allow_origins=settings.cors_origins,
+    allow_origin_regex=r"https?://.*\.onrender\.com",
     allow_credentials=True,
     allow_methods=["*"],
     allow_headers=["*"],
@@ -32,10 +36,26 @@ def startup():
     if is_db_connected():
         try:
             db = get_db()
-            db.captchas.create_index(
-                "created_at",
-                expireAfterSeconds=settings.captcha_ttl_seconds,
-            )
+            db = cast(Database, db)
+            index_name = "created_at_1"
+            desired_ttl = settings.captcha_ttl_seconds
+            index_info = db.captchas.index_information().get(index_name)
+            existing_ttl = None
+            if index_info:
+                existing_ttl = index_info.get("expireAfterSeconds")
+            try:
+                if existing_ttl is not None and existing_ttl != desired_ttl:
+                    db.captchas.drop_index(index_name)
+                db.captchas.create_index(
+                    "created_at",
+                    expireAfterSeconds=desired_ttl,
+                )
+            except OperationFailure as e:
+                print(
+                    "Warning: Could not update captcha TTL index. "
+                    f"Error: {e}"
+                )
+
             db.users.create_index("email", unique=True)
 
             admin_email = settings.admin_email.strip().lower()
@@ -49,7 +69,18 @@ def startup():
                     }
                 )
             print("Connected to MongoDB successfully.")
+        except OperationFailure as e:
+            print(
+                "Warning: Could not initialize MongoDB collections. "
+                f"Error: {e}"
+            )
         except Exception as e:
-            print(f"Warning: Could not initialize MongoDB collections. Error: {e}")
+            print(
+                "Warning: Could not initialize MongoDB collections. "
+                f"Error: {e}"
+            )
     else:
-        print("Warning: Could not connect to MongoDB. Using in-memory fallbacks for Auth.")
+        print(
+            "Warning: Could not connect to MongoDB. "
+            "Using in-memory fallbacks for Auth."
+        )
