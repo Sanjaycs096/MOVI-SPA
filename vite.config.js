@@ -9,6 +9,6 @@ export default defineConfig({
     babel({ presets: [reactCompilerPreset()] })
   ],
   preview: {
-    allowedHosts: 'all',
+    allowedHosts: ['movi-spa-dev.onrender.com', '.onrender.com'],
   },
 })
