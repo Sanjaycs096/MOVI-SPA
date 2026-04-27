@@ -105,7 +105,13 @@ const VIEW_META = {
 }
 
 function App() {
-  const [view, setView] = useState('login')
+  const [view, setView] = useState(() => {
+    try {
+      return localStorage.getItem('access_token') ? 'dashboard' : 'login'
+    } catch (error) {
+      return 'login'
+    }
+  })
   const [clients, setClients] = useState([])
 
   useEffect(() => {
